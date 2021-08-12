@@ -13,8 +13,15 @@ import static java.util.Optional.of;
 import static java.util.Optional.ofNullable;
 
 public class CarStorage {
-    private final NavigableSet<Car> storage = new TreeSet<>(Comparator.comparing(
-            car -> ofNullable(car.getOwner()).map(Owner::getFullName).orElse("")));
+    private final NavigableSet<Car> storage = new TreeSet<>(
+            (car1, car2) -> {
+                if (car1.getVin().equals(car2.getVin())) {
+                    return 0;
+                }
+                String owner1 = ofNullable(car1.getOwner()).map(Owner::getFullName).orElse("");
+                String owner2 = ofNullable(car2.getOwner()).map(Owner::getFullName).orElse("");
+                return Optional.of(owner1).filter(o -> !o.equals(owner2)).map(o -> o.compareTo(owner2)).orElse(-1);
+            });
 
     private static final CarStorage INSTANCE = new CarStorage();
 
